@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlabce
+  labels:
+    app: gitlabce
+    run: gitlabce
+spec:
+  selector:
+    matchLabels:
+      app: gitlabce
+  template:
+    metadata:
+      labels:
+        app: gitlabce
+    spec:
+      containers:
+      - name: gitlabce
+        image: gitlab/gitlab-ce:latest
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 750m
+          requests:
+            cpu: 200m
+            memory: 250Mi
+        ports:
+        - containerPort: 8080
+          name: gitlab-web
+          protocol: TCP
+        - containerPort: 22
+          name: gitlab-ssh
+          protocol: TCP
+        volumeMounts:
+          - mountPath: /var/log/gitlab
+            name: gitlab-logs
+          - mountPath: /var/opt/gitlab
+            name: gitlab-data
+          - mountPath: /etc/gitlab
+            name: gitlab-conf
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 300
+      volumes:
+      - name: gitlab-logs
+        persistentVolumeClaim:
+          claimName: pvc-gl-logs
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: pvc-gl-data
+      - name: gitlab-conf
+        persistentVolumeClaim:
+          claimName: pvc-gl-config

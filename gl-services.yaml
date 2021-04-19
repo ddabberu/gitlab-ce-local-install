@@ -1,0 +1,18 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitlab
+spec:
+  selector:
+    app: gitlabce
+  type: LoadBalancer
+  ports:
+  - name: gitlab-web
+    port: 8080
+    targetPort: 80
+  - name: gitlab-https
+    port: 8443
+    targetPort: 443
+  - name: gitlab-ssh
+    port: 22
